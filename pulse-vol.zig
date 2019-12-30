@@ -63,7 +63,7 @@ extern fn context_state_callback(
     c: ?*pulse.pa_context,
     userdata: ?*c_void,
 ) void {
-    if (pulse.pa_context_get_state(c) == pulse.PA_CONTEXT_READY) {
+    if (pulse.pa_context_get_state(c) == .PA_CONTEXT_READY) {
         pulse.pa_context_set_subscribe_callback(c, context_subscribe_callback, null);
 
         const o = pulse.pa_context_subscribe(
