@@ -24,9 +24,8 @@ extern fn get_sink_info_callback(c: ?*pulse.struct_pa_context, optional_sink: ?*
     }
 }
 
-extern fn get_server_info_cb(c: ?*pulse.struct_pa_context, optional_server_info: [*c]const pulse.struct_pa_server_info, userdata: ?*c_void) void {
-    if (optional_server_info != null) {
-        var server_info = optional_server_info.*;
+extern fn get_server_info_cb(c: ?*pulse.struct_pa_context, optional_server_info: ?*const pulse.struct_pa_server_info, userdata: ?*c_void) void {
+    if (optional_server_info) |server_info| {
         var default_sink_name = server_info.default_sink_name;
         // This intToPtr/ptrToInt is here to workaround the fact that
         // default_sink_name is a const, but we're casting it to a non-const by
