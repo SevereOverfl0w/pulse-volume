@@ -1,9 +1,10 @@
+const std = @import("std");
+const warn = std.debug.warn;
+const round = std.math.round;
+const mem = std.mem;
+const cstr = std.cstr;
+
 const pulse = @cImport(@cInclude("pulse/pulseaudio.h"));
-const warn = @import("std").debug.warn;
-const round = @import("std").math.round;
-const toSlice = @import("std").mem.toSlice;
-const toSliceConst = @import("std").mem.toSliceConst;
-const cstr = @import("std").cstr;
 
 pub const PA_VOLUME_NORM = 0x10000;
 
@@ -20,8 +21,8 @@ extern fn get_sink_info_callback(
 ) void {
     if (optional_sink) |sink| {
         if (optional_userdata) |user_data| {
-            const default_sink = toSliceConst(u8, @ptrCast([*:0]const u8, user_data));
-            const sink_name = toSliceConst(u8, sink.name);
+            const default_sink = mem.toSliceConst(u8, @ptrCast([*:0]const u8, user_data));
+            const sink_name = mem.toSliceConst(u8, sink.name);
             if (cstr.cmp(sink_name, default_sink) == 0) {
                 warn("{}%\n", .{volume_as_percent(sink.*.volume)});
             }
