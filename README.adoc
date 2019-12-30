@@ -1,0 +1,3 @@
+= Pulse-vol
+
+Prints out the Pulseaudio default sink volume, and prints it again whenever it changes.
