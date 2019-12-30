@@ -15,7 +15,7 @@ fn volume_as_percent(cvol: pulse.pa_cvolume) u32 {
 extern fn get_sink_info_callback(c: ?*pulse.struct_pa_context, optional_sink: [*c]const pulse.struct_pa_sink_info, islast: c_int, optional_userdata: ?*c_void) void {
     if (optional_sink) |sink| {
         if (optional_userdata) |user_data| {
-            const default_sink = toSliceConst(u8, @ptrCast([*:0]u8, user_data));
+            const default_sink = toSliceConst(u8, @ptrCast([*:0]const u8, user_data));
             const sink_name = toSliceConst(u8, sink.*.name);
             if (cstr.cmp(sink_name, default_sink) == 0) {
                 warn("{}%\n", .{volume_as_percent(sink.*.volume)});
