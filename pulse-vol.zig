@@ -13,6 +13,8 @@ fn volume_as_percent(cvol: pulse.pa_cvolume) u32 {
     return (pulse.pa_cvolume_max(&cvol) * 100 + (PA_VOLUME_NORM / 2)) / PA_VOLUME_NORM;
 }
 
+pub var last_vol: ?u32 = null;
+
 extern fn get_sink_info_callback(
     c: ?*pulse.struct_pa_context,
     optional_sink: ?*const pulse.struct_pa_sink_info,
@@ -24,12 +26,16 @@ extern fn get_sink_info_callback(
             const default_sink = mem.toSliceConst(u8, @ptrCast([*:0]const u8, user_data));
             const sink_name = mem.toSliceConst(u8, sink.name);
             if (cstr.cmp(sink_name, default_sink) == 0) {
-                io.getStdOut().outStream().stream.print("{}%\n", .{}) catch |e| {
-                    std.debug.warn("{}\n", .{e});
-                    if (@errorReturnTrace()) |trace| {
-                        std.debug.dumpStackTrace(trace.*);
-                    }
-                };
+                const new_vol = volume_as_percent(sink.*.volume);
+                if (last_vol == null or new_vol != last_vol.?) {
+                    io.getStdOut().outStream().stream.print("{}%\n", .{new_vol}) catch |e| {
+                        std.debug.warn("{}\n", .{e});
+                        if (@errorReturnTrace()) |trace| {
+                            std.debug.dumpStackTrace(trace.*);
+                        }
+                    };
+                    last_vol = new_vol;
+                }
             }
         }
     }
