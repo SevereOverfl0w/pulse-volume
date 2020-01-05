@@ -24,7 +24,12 @@ extern fn get_sink_info_callback(
             const default_sink = mem.toSliceConst(u8, @ptrCast([*:0]const u8, user_data));
             const sink_name = mem.toSliceConst(u8, sink.name);
             if (cstr.cmp(sink_name, default_sink) == 0) {
-                warn("{}%\n", .{volume_as_percent(sink.*.volume)});
+                io.getStdOut().outStream().stream.print("{}%\n", .{}) catch |e| {
+                    std.debug.warn("{}\n", .{e});
+                    if (@errorReturnTrace()) |trace| {
+                        std.debug.dumpStackTrace(trace.*);
+                    }
+                };
             }
         }
     }
